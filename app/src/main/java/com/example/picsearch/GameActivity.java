@@ -14,25 +14,39 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.os.Handler;
+import android.widget.Toast;
+import android.os.Vibrator;
+import com.google.android.material.slider.RangeSlider;
+import com.google.android.material.slider.Slider;
 
 import org.w3c.dom.Text;
 
 public class GameActivity extends AppCompatActivity implements LocationListener {
 
-    Button button_location;
-    TextView textView_location;
+    Slider rangeSlider;
+
     LocationManager locationManager;
+    Handler handler = new Handler();
+    Runnable runnable;
+    Location target = new Location("");
+
+    float range = 0;
+
+    //Nombre de miliseconde entre chaque refresh
+    int delay = 2000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
+        rangeSlider = findViewById(R.id.rangeSlider);
 
-        textView_location = findViewById(R.id.text_location);
-        button_location = findViewById(R.id.button_location);
+        // Target location (TEST)
+        target.setLatitude(37.3175);
+        target.setLongitude(-121.9109);
 
         if(ContextCompat.checkSelfPermission(GameActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
@@ -42,14 +56,23 @@ public class GameActivity extends AppCompatActivity implements LocationListener 
 
         }
 
-        button_location.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+    }
+
+    @Override
+    protected void onResume() {
+        handler.postDelayed(runnable = new Runnable() {
+            public void run() {
+                handler.postDelayed(runnable, delay);
                 getLocation();
             }
+        }, delay);
+        super.onResume();
+    }
 
-        });
-
+    @Override
+    protected void onPause() {
+        handler.removeCallbacks(runnable);
+        super.onPause();
     }
 
     @SuppressLint("MissingPermission")
@@ -68,7 +91,18 @@ public class GameActivity extends AppCompatActivity implements LocationListener 
     @Override
     public void onLocationChanged(@NonNull Location location) {
 
-        Toast.makeText(this, "" + location.getLatitude() + "/" + location.getLongitude(), Toast.LENGTH_SHORT).show();
+        //Distance between the user and its target x2 = cible, x1 = user
+        double distance =  Math.round(location.distanceTo(target)) ;
+        range = rangeSlider.getValue();
+
+        if (distance < range) {
+
+            // 400 miliseconds vibration if the user is within range of the target
+            Vibrator v = (Vibrator) getSystemService(this.VIBRATOR_SERVICE);
+            v.vibrate(400);
+        }
+
+        Toast.makeText(this, "" + distance + " / " + range, Toast.LENGTH_SHORT).show();
 
     }
 
@@ -87,3 +121,7 @@ public class GameActivity extends AppCompatActivity implements LocationListener 
 
     }
 }
+
+
+
+
