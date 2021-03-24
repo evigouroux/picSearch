@@ -38,7 +38,7 @@ public class GameActivity extends AppCompatActivity implements LocationListener 
     Button foundButton;
 
     private SoundPool soundPool;
-    private int heatSound1;
+    private int heatSound0, heatSound1, heatSound2, heatSound3;
 
     boolean soundMode = false;
     boolean autoMode = false;
@@ -46,6 +46,7 @@ public class GameActivity extends AppCompatActivity implements LocationListener 
     LocationManager locationManager;
     Location currentLocation = null;
     double distance = 0;
+    double previousDistance = 0;
     Handler handler = new Handler();
     Runnable runnable;
     Location target = new Location("");
@@ -83,7 +84,10 @@ public class GameActivity extends AppCompatActivity implements LocationListener 
                 .setAudioAttributes(audioAttributes)
                 .build();
 
-        heatSound1 = soundPool.load(this, R.raw.dea_ai_m, 1);
+        heatSound0 = soundPool.load(this, R.raw.cold, 1);
+        heatSound1 = soundPool.load(this, R.raw.neutral, 1);
+        heatSound2 = soundPool.load(this, R.raw.hot, 1);
+        heatSound3 = soundPool.load(this, R.raw.veryhot, 1);
 
         // Event listener
         autoModeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -99,8 +103,6 @@ public class GameActivity extends AppCompatActivity implements LocationListener 
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
                 soundMode = isChecked;
-                soundPool.play(heatSound1, 1, 1, 0, 0, 1);
-
             }
         });
 
@@ -136,14 +138,27 @@ public class GameActivity extends AppCompatActivity implements LocationListener 
     private void checkDistance() {
 
         if (currentLocation != null) {
+            previousDistance = distance;
             distance = currentLocation.distanceTo(target);
             range = rangeSlider.getValue();
 
             if (distance < range) {
 
                 // 400 miliseconds vibration if the user is within range of the target
-                Vibrator v = (Vibrator) getSystemService(this.VIBRATOR_SERVICE);
-                v.vibrate(400);
+                if (!soundMode) {
+                    Vibrator v = (Vibrator) getSystemService(this.VIBRATOR_SERVICE);
+                    v.vibrate(400);
+                    soundPool.play(heatSound2, 1, 1, 0, 0, 1);
+                }
+                else {
+                    if (distance <= previousDistance) {
+                        soundPool.play(heatSound2, 1, 1, 0, 0, 1);
+                    }
+                    else {
+                        soundPool.play(heatSound0, 1, 1, 0, 0, 1);
+                    }
+                }
+
                 if (autoMode && range >= 5 && distance >= 5) {
 
                     range = (float)distance - 5;
