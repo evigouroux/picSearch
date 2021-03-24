@@ -1,29 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation = "vertical"
-    android:gravity = "center"
+    android:gravity="center"
+    android:orientation="vertical"
     tools:context=".GameActivity">
 
     <TextView
         android:id="@+id/text_location"
-        android:textSize="18sp"
-        android:textStyle="bold"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_margin="10dp"
         android:text="Portée en m"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:textSize="18sp"
+        android:textStyle="bold" />
 
     <com.google.android.material.slider.Slider
         android:id="@+id/rangeSlider"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="201dp"
         android:valueFrom="1"
         android:valueTo="1000">
 
     </com.google.android.material.slider.Slider>
+
+    <Button
+        android:id="@+id/autoModeButton"
+        android:layout_width="164dp"
+        android:layout_height="wrap_content"
+        android:baselineAligned="false"
+        android:text="Mode auto" />
+
+    <Button
+        android:id="@+id/autoModeButton2"
+        android:layout_width="171dp"
+        android:layout_height="38dp"
+        android:baselineAligned="false"
+        android:text="Mode auto" />
 
 </LinearLayout>

@@ -29,6 +29,7 @@ public class GameActivity extends AppCompatActivity implements LocationListener 
     Slider rangeSlider;
 
     LocationManager locationManager;
+    Location currentLocation = null;
     Handler handler = new Handler();
     Runnable runnable;
     Location target = new Location("");
@@ -36,7 +37,7 @@ public class GameActivity extends AppCompatActivity implements LocationListener 
     float range = 0;
 
     //Nombre de miliseconde entre chaque refresh
-    int delay = 2000;
+    int delay = 1000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,8 +46,11 @@ public class GameActivity extends AppCompatActivity implements LocationListener 
         rangeSlider = findViewById(R.id.rangeSlider);
 
         // Target location (TEST)
-        target.setLatitude(37.3175);
-        target.setLongitude(-121.9109);
+        target.setLatitude(37.3975);
+        target.setLongitude(-122.0609);
+
+        getLocation();
+        checkDistance();
 
         if(ContextCompat.checkSelfPermission(GameActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
@@ -64,6 +68,7 @@ public class GameActivity extends AppCompatActivity implements LocationListener 
             public void run() {
                 handler.postDelayed(runnable, delay);
                 getLocation();
+                checkDistance();
             }
         }, delay);
         super.onResume();
@@ -73,6 +78,23 @@ public class GameActivity extends AppCompatActivity implements LocationListener 
     protected void onPause() {
         handler.removeCallbacks(runnable);
         super.onPause();
+    }
+
+    private void checkDistance() {
+
+        if (currentLocation != null) {
+            double distance = currentLocation.distanceTo(target);
+            range = rangeSlider.getValue();
+
+            if (distance < range) {
+
+                // 400 miliseconds vibration if the user is within range of the target
+                Vibrator v = (Vibrator) getSystemService(this.VIBRATOR_SERVICE);
+                v.vibrate(400);
+                Toast.makeText(this, "Hehehe vibrator goes brrrr", Toast.LENGTH_SHORT).show();
+            }
+        }
+
     }
 
     @SuppressLint("MissingPermission")
@@ -91,18 +113,7 @@ public class GameActivity extends AppCompatActivity implements LocationListener 
     @Override
     public void onLocationChanged(@NonNull Location location) {
 
-        //Distance between the user and its target x2 = cible, x1 = user
-        double distance =  Math.round(location.distanceTo(target)) ;
-        range = rangeSlider.getValue();
-
-        if (distance < range) {
-
-            // 400 miliseconds vibration if the user is within range of the target
-            Vibrator v = (Vibrator) getSystemService(this.VIBRATOR_SERVICE);
-            v.vibrate(400);
-        }
-
-        Toast.makeText(this, "" + distance + " / " + range, Toast.LENGTH_SHORT).show();
+        currentLocation = location;
 
     }
 
