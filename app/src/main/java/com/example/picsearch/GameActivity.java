@@ -14,6 +14,8 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.os.Handler;
@@ -27,9 +29,15 @@ import org.w3c.dom.Text;
 public class GameActivity extends AppCompatActivity implements LocationListener {
 
     Slider rangeSlider;
+    Switch autoModeSwitch;
+    Switch soundModeSwitch;
+
+    boolean soundMode = false;
+    boolean autoMode = false;
 
     LocationManager locationManager;
     Location currentLocation = null;
+    double distance = 0;
     Handler handler = new Handler();
     Runnable runnable;
     Location target = new Location("");
@@ -44,17 +52,37 @@ public class GameActivity extends AppCompatActivity implements LocationListener 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
         rangeSlider = findViewById(R.id.rangeSlider);
+        autoModeSwitch = findViewById(R.id.autoModeSwitch);
+        soundModeSwitch = findViewById(R.id.soundModeSwitch);
 
         // Target location (TEST)
-        target.setLatitude(37.3975);
-        target.setLongitude(-122.0609);
+        target.setLatitude(45.0469);
+        target.setLongitude(3.8650);
 
         getLocation();
         checkDistance();
 
-        if(ContextCompat.checkSelfPermission(GameActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        autoModeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                autoMode = isChecked;
+                rangeSlider.setEnabled(!autoMode);
+            }
+        });
 
-            ActivityCompat.requestPermissions(GameActivity.this, new String[] {
+        soundModeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                soundMode = isChecked;
+
+            }
+        });
+
+
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this, new String[] {
                     Manifest.permission.ACCESS_FINE_LOCATION
             }, 100);
 
@@ -69,6 +97,7 @@ public class GameActivity extends AppCompatActivity implements LocationListener 
                 handler.postDelayed(runnable, delay);
                 getLocation();
                 checkDistance();
+
             }
         }, delay);
         super.onResume();
@@ -83,7 +112,7 @@ public class GameActivity extends AppCompatActivity implements LocationListener 
     private void checkDistance() {
 
         if (currentLocation != null) {
-            double distance = currentLocation.distanceTo(target);
+            distance = currentLocation.distanceTo(target);
             range = rangeSlider.getValue();
 
             if (distance < range) {
@@ -91,7 +120,12 @@ public class GameActivity extends AppCompatActivity implements LocationListener 
                 // 400 miliseconds vibration if the user is within range of the target
                 Vibrator v = (Vibrator) getSystemService(this.VIBRATOR_SERVICE);
                 v.vibrate(400);
-                Toast.makeText(this, "Hehehe vibrator goes brrrr", Toast.LENGTH_SHORT).show();
+                if (autoMode && range >= 5 && distance >= 5) {
+
+                    range = (float)distance - 5;
+                    rangeSlider.setValue(range);
+
+                }
             }
         }
 
@@ -101,7 +135,7 @@ public class GameActivity extends AppCompatActivity implements LocationListener 
     private void getLocation() {
         try {
             locationManager = (LocationManager) getApplicationContext().getSystemService(LOCATION_SERVICE);
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 5, GameActivity.this);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 5, this);
         } catch (Exception e) {
 
             e.printStackTrace();

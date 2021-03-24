@@ -18,25 +18,29 @@
 
     <com.google.android.material.slider.Slider
         android:id="@+id/rangeSlider"
-        android:layout_width="wrap_content"
-        android:layout_height="201dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:valueFrom="1"
         android:valueTo="1000">
 
     </com.google.android.material.slider.Slider>
 
-    <Button
-        android:id="@+id/autoModeButton"
-        android:layout_width="164dp"
+    <Switch
+        android:id="@+id/autoModeSwitch"
+        android:layout_width="156dp"
         android:layout_height="wrap_content"
-        android:baselineAligned="false"
-        android:text="Mode auto" />
+        android:text="Auto" />
+
+    <Switch
+        android:id="@+id/soundModeSwitch"
+        android:layout_width="157dp"
+        android:layout_height="wrap_content"
+        android:text="Mode sonore" />
 
     <Button
-        android:id="@+id/autoModeButton2"
-        android:layout_width="171dp"
-        android:layout_height="38dp"
-        android:baselineAligned="false"
-        android:text="Mode auto" />
+        android:id="@+id/button3"
+        android:layout_width="359dp"
+        android:layout_height="118dp"
+        android:text="Trouvé !" />
 
 </LinearLayout>
