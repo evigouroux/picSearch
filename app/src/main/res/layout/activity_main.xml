@@ -5,22 +5,64 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="center"
     android:orientation = "vertical"
     tools:context=".MainActivity">
 
-    <ImageView
-        android:layout_weight="1"
-        android:id="@+id/imageview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-
     <Button
-        android:text="Capture Image"
+        android:id="@+id/importButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Importer image" />
+
+    <ImageView
+        android:id="@+id/target"
+        android:layout_width="match_parent"
+        android:layout_height="25dp"
+        android:layout_weight="1"
+        android:scaleType="center" />
+
+    <ImageView
+        android:id="@+id/source"
+        android:layout_width="match_parent"
+        android:layout_height="25dp"
+        android:layout_weight="1"
+        android:scaleType="center" />
+
+    <TextView
+        android:id="@+id/text_location"
+        android:textSize="18sp"
         android:textStyle="bold"
-        android:textColor="#ffffff"
-        android:background="@color/design_default_color_primary"
-        android:id="@+id/button"
+        android:layout_margin="10dp"
+        android:text="Portée en m"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
+
+    <com.google.android.material.slider.Slider
+        android:id="@+id/rangeSlider"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:valueFrom="1"
+        android:valueTo="1000">
+
+    </com.google.android.material.slider.Slider>
+
+    <Switch
+        android:id="@+id/autoModeSwitch"
+        android:layout_width="156dp"
+        android:layout_height="wrap_content"
+        android:text="Auto" />
+
+    <Switch
+        android:id="@+id/soundModeSwitch"
+        android:layout_width="157dp"
+        android:layout_height="wrap_content"
+        android:text="Mode sonore" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Trouvé !!!" />
 
 </LinearLayout>
