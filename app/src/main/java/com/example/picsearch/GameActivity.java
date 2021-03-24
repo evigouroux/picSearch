@@ -11,7 +11,11 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.media.AudioAttributes;
+import android.media.SoundPool;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -31,6 +35,10 @@ public class GameActivity extends AppCompatActivity implements LocationListener 
     Slider rangeSlider;
     Switch autoModeSwitch;
     Switch soundModeSwitch;
+    Button foundButton;
+
+    private SoundPool soundPool;
+    private int heatSound1;
 
     boolean soundMode = false;
     boolean autoMode = false;
@@ -54,14 +62,30 @@ public class GameActivity extends AppCompatActivity implements LocationListener 
         rangeSlider = findViewById(R.id.rangeSlider);
         autoModeSwitch = findViewById(R.id.autoModeSwitch);
         soundModeSwitch = findViewById(R.id.soundModeSwitch);
+        foundButton = findViewById(R.id.foundButton);
 
         // Target location (TEST)
         target.setLatitude(45.0469);
         target.setLongitude(3.8650);
 
+        // Initializing distance to target as well as starting position
         getLocation();
         checkDistance();
 
+        // Soundpool creation
+        AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
+                .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+                .build();
+
+        soundPool = new SoundPool.Builder()
+                .setMaxStreams(10)
+                .setAudioAttributes(audioAttributes)
+                .build();
+
+        heatSound1 = soundPool.load(this, R.raw.dea_ai_m, 1);
+
+        // Event listener
         autoModeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -75,10 +99,10 @@ public class GameActivity extends AppCompatActivity implements LocationListener 
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
                 soundMode = isChecked;
+                soundPool.play(heatSound1, 1, 1, 0, 0, 1);
 
             }
         });
-
 
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
